@@ -35,6 +35,16 @@ ReAct-агент на [LangGraph](https://github.com/langchain-ai/langgraph): и
 
 **Условное ребро (`tools_condition`)** — тоже готовая функция из `langgraph.prebuilt`: проверяет последнее сообщение от `agent` на наличие `tool_calls`. Если они есть — направляет выполнение в `tools`, иначе — в `END`. После `tools` граф всегда возвращается в `agent`, чтобы модель учла результат поиска.
 
+## 🔍 Observability (Langfuse)
+
+Агент инструментирован [Langfuse](https://langfuse.com): каждый запуск `graph.invoke(...)` даёт структурированный трейс цикла `agent → tools (Tavily) → agent`, где видно каждый шаг графа, количество токенов, стоимость и latency. Это удобно для отладки промпта и контроля расходов на LLM.
+
+![Трейс запуска агента в Langfuse](assets/langfuse-trace.png)
+
+*Один запуск агента в Langfuse: вызов модели, обращение к Tavily-поиску и итоговый ответ с разбивкой по времени и токенам.*
+
+Трейсинг включается передачей `CallbackHandler` из `langfuse.langchain` в `config={"callbacks": [...]}` при вызове `graph.invoke(...)`; ключи (`LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`) задаются в `.env`.
+
 ## Стек
 
 - Python 3.12
