@@ -21,6 +21,13 @@ if PROVIDER == "openai":
     llm = ChatOpenAI(model="gpt-4o-mini")
 elif PROVIDER == "anthropic":
     llm = ChatAnthropic(model="claude-sonnet-5")
+elif PROVIDER == "vllm":
+    llm = ChatOpenAI(
+        model="Qwen/Qwen2.5-7B-Instruct-AWQ",
+        base_url="http://localhost:8000/v1",
+        api_key="EMPTY",
+        temperature=0,
+    )
 else:
     raise ValueError(f"Unknown PROVIDER: {PROVIDER!r} (expected 'openai' or 'anthropic')")
 
