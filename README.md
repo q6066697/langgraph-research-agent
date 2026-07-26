@@ -1,6 +1,6 @@
 # langgraph-research-agent
 
-ReAct-агент на [LangGraph](https://github.com/langchain-ai/langgraph): ищет актуальную информацию в вебе через Tavily и отвечает на вопросы, приводя источники (URL) в конце ответа. Поддерживает переключение LLM-провайдера (OpenAI или Anthropic) через переменную окружения.
+ReAct-агент на [LangGraph](https://github.com/langchain-ai/langgraph): ищет актуальную информацию в вебе через Tavily и отвечает на вопросы, приводя источники (URL) в конце ответа. Поддерживает переключение LLM-провайдера (OpenAI, Anthropic или self-hosted модель через vLLM) через переменную окружения.
 
 ## Схема графа
 
@@ -50,7 +50,7 @@ ReAct-агент на [LangGraph](https://github.com/langchain-ai/langgraph): и
 - Python 3.12
 - [LangGraph](https://github.com/langchain-ai/langgraph)
 - [langchain-tavily](https://pypi.org/project/langchain-tavily/) — веб-поиск через Tavily
-- LLM-провайдер: OpenAI (`langchain-openai`) или Anthropic (`langchain-anthropic`) — выбирается через `.env`
+- LLM-провайдер: OpenAI (`langchain-openai`), Anthropic (`langchain-anthropic`) или self-hosted через vLLM (OpenAI-совместимый эндпоинт) — выбирается через `.env`
 
 ## Установка
 
@@ -72,7 +72,7 @@ cp .env.example .env
 OPENAI_API_KEY=...
 ANTHROPIC_API_KEY=...
 TAVILY_API_KEY=...
-PROVIDER=openai        # или anthropic
+PROVIDER=openai        # openai | anthropic | vllm
 ```
 
 Запуск:
@@ -86,6 +86,12 @@ python agent.py
 ![Пример запроса к агенту](assets/example-run.png)
 
 *Агент получает вопрос, выполняет веб-поиск через Tavily и отвечает, приводя источники в конце — как того требует системный промпт.*
+
+## Self-hosted модель через vLLM
+
+Помимо облачных API (OpenAI/Anthropic) агент умеет работать на локальной модели, поднятой через [vLLM](https://github.com/vllm-project/vllm) с OpenAI-совместимым эндпоинтом — провайдер выбирается через `PROVIDER=vllm`. Проверено на Qwen2.5-7B-Instruct-AWQ (Tesla T4, 16 ГБ): полный ReAct-цикл с tool calling и веб-поиском через Tavily отрабатывает на self-hosted модели.
+
+Команда запуска сервера, конфигурация провайдера и разбор нюансов (dtype под T4, tool-call-parser, ошибка 400 на `tool_choice:"auto"`) — в [docs/self-hosted-vllm.md](docs/self-hosted-vllm.md).
 
 ## Известные ограничения
 
