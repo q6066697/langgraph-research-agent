@@ -81,6 +81,33 @@ PROVIDER=openai        # openai | anthropic | vllm
 python agent.py
 ```
 
+## Запуск как HTTP-сервис
+
+Агент доступен не только в консоли, но и как HTTP-сервис на FastAPI с двумя эндпоинтами:
+
+- `GET /health` — проверка живости (liveness probe), возвращает `{"status": "ok"}`
+- `POST /chat` — принимает `{"question": "..."}` и возвращает `{"answer": "..."}`
+
+### Локальный запуск
+
+```bash
+python -m venv .venv
+source .venv/bin/activate      # Windows: .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+cp .env.example .env           # затем впишите свои API-ключи
+uvicorn api:app --reload
+```
+
+Интерактивная документация (Swagger UI) — http://127.0.0.1:8000/docs
+
+### Запуск в Docker
+
+Сервис упакован в multi-stage Dockerfile: slim-базовый образ, запуск под non-root пользователем. API-ключи передаются в рантайме через `--env-file` и не попадают внутрь образа.
+
+```bash
+docker build -t research-agent-api .
+docker run --rm -p 8000:8000 --env-file .env research-agent-api
+```
 ## Пример работы
 
 ![Пример запроса к агенту](assets/example-run.png)
