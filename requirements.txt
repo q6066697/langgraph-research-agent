@@ -4,3 +4,7 @@ langchain-anthropic
 langchain-tavily
 tavily-python
 python-dotenv
+
+fastapi
+uvicorn[standard]
+langfuse

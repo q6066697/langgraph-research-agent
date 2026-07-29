@@ -12,7 +12,7 @@ from langchain_tavily import TavilySearch
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
-
+from langfuse.langchain import CallbackHandler
 load_dotenv()
 
 PROVIDER = os.getenv("PROVIDER", "openai")
@@ -60,7 +60,7 @@ graph_builder.add_conditional_edges("agent", tools_condition)
 graph_builder.add_edge("tools", "agent")
 
 graph = graph_builder.compile()
-
+langfuse_handler = CallbackHandler()
 
 if __name__ == "__main__":
     print("Research agent. Type 'exit' or 'quit' to stop.")
@@ -70,6 +70,9 @@ if __name__ == "__main__":
             break
         if not user_input:
             continue
-        result = graph.invoke({"messages": [("user", user_input)]})
+        result = graph.invoke(
+            {"messages": [("user", user_input)]},
+            config={"callbacks": [langfuse_handler]},
+        )
         final_message = result["messages"][-1]
         print(f"\nAnswer: {final_message.content}")
