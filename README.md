@@ -1,5 +1,7 @@
 # langgraph-research-agent
 
+[![CI](https://github.com/q6066697/langgraph-research-agent/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/q6066697/langgraph-research-agent/actions/workflows/ci.yml)
+
 ReAct-агент на [LangGraph](https://github.com/langchain-ai/langgraph): ищет актуальную информацию в вебе через Tavily и отвечает на вопросы, приводя источники (URL) в конце ответа. Поддерживает переключение LLM-провайдера (OpenAI, Anthropic или self-hosted модель через vLLM) через переменную окружения.
 
 ## Схема графа
@@ -108,6 +110,18 @@ uvicorn api:app --reload
 docker build -t research-agent-api .
 docker run --rm -p 8000:8000 --env-file .env research-agent-api
 ```
+
+## Тесты и CI
+
+Тесты API (`tests/test_api.py`) проверяют `/health` и `/chat` через FastAPI `TestClient`. Граф агента в них подменяется заглушкой, а ключи — фиктивными значениями (`tests/conftest.py`), поэтому реальные API-ключи и сеть не нужны.
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+ruff check .
+pytest
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) на каждый push и pull request в `master` запускает две задачи: `lint-and-test` (ruff + pytest на Python 3.12) и `docker-build` (сборка образа из `Dockerfile` без публикации).
 ## Пример работы
 
 ![Пример запроса к агенту](assets/example-run.png)

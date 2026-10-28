@@ -2,17 +2,16 @@ import os
 from typing import Annotated
 
 from dotenv import load_dotenv
-from typing_extensions import TypedDict
-
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
-
+from langfuse.langchain import CallbackHandler
 from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
-from langfuse.langchain import CallbackHandler
+from typing_extensions import TypedDict
+
 load_dotenv()
 
 PROVIDER = os.getenv("PROVIDER", "openai")
